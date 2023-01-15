@@ -21,7 +21,7 @@
 
         player.Shoot();
         
-№ Пример 2. Использование контейнера
+# Пример 2. Использование контейнера
 
         InstallContainer container = new(typeof(DefaultInstaller));
 
