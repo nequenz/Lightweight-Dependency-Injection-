@@ -7,7 +7,12 @@ public class UnitTest2 : IUnitTest
 
         playerInstaller.Bind<IWeapon, Pistol>(TypeParams.Instance);
 
-        new Player(playerInstaller).Shoot();
+        Player player = new Player();
+
+        player.SetInstaller(playerInstaller);
+        player.InitDependencies();
+
+        player.Shoot();
     }
 
 }

@@ -9,7 +9,13 @@ public class UnitTest1 : IUnitTest
 
         playerInstaller.Bind<IWeapon, RPG>(TypeParams.Instance);
 
-        new Player(playerInstaller).Shoot();
+        Player player = new Player();
+
+        player.SetInstaller(playerInstaller);
+        player.InitDependencies();
+
+        player.Shoot();
+
     }
 
 }

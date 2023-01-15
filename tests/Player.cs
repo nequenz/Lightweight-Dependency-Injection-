@@ -1,15 +1,17 @@
 ﻿
 
 
-public class Player 
+public class Player : IInjectable
 {
     private IInstaller? _installer;
     private IWeapon? _weapon;
 
-    public Player(IInstaller installer)
+
+    public void SetInstaller(IInstaller? installer) => _installer = installer;
+
+    public void InitDependencies()
     {
-        _installer = installer;
-        _weapon = _installer.Resolve<IWeapon>();
+        _weapon = _installer?.Resolve<IWeapon>();
     }
 
     public void Shoot() => _weapon?.Shoot();

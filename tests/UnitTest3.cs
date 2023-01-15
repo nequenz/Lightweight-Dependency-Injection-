@@ -13,13 +13,11 @@ public class UnitTest3 : IUnitTest
         {
             playerInstaller.Bind<IWeapon, Pistol>(TypeParams.Instance);
         }
-        catch (ArgumentException ex)
+        catch (TypeAccessException ex)
         {
             Console.WriteLine("cathed:" + ex.Message);
 
         }
-
-        new Player(playerInstaller).Shoot();
     }
 
 }
