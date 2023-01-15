@@ -37,7 +37,7 @@ public class DefaultInstaller : IInstaller
         ContaineredType type;
 
         if (_mathes.ContainsKey(matchedInterface))
-            throw new ArgumentOutOfRangeException( matchedInterface.Name + " is matched to" + matchedType.Name + " yet");
+            throw new ArgumentException("[" + matchedInterface.Name + "] is matched to [" + matchedType.Name + "] yet.");
 
         type = new ContaineredType(typeof(T), typeParam);
 
