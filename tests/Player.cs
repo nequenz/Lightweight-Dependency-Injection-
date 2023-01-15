@@ -3,15 +3,12 @@
 
 public class Player : IInjectable
 {
-    private IInstaller? _installer;
     private IWeapon? _weapon;
 
 
-    public void SetInstaller(IInstaller? installer) => _installer = installer;
-
-    public void InitDependencies()
+    public void InitDependencies(IInstaller? installer)
     {
-        _weapon = _installer?.Resolve<IWeapon>();
+        _weapon = installer?.Resolve<IWeapon>();
     }
 
     public void Shoot() => _weapon?.Shoot();

@@ -33,10 +33,10 @@
         if (_matches.TryGetValue(type, out IInstaller? installer))
         {
             result = (T?)Activator.CreateInstance(type);
-            result?.SetInstaller(installer);
-            result?.InitDependencies();
+            result?.InitDependencies(installer);
         }
 
+        Console.WriteLine(result);
         return result;
     }
 

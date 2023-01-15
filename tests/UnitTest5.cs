@@ -37,19 +37,19 @@ public class Randimizer2 : IRandomizer
 
 public class RandomValueLogger : IInjectable
 {
-    IInstaller? _installer;
     ILogger? _logger;
     IRandomizer? _randomizer;
 
     public void ShowRandomValue() => _logger?.Log( _randomizer.GetRandomValue() );
 
-    public void InitDependencies()
+    public void InitDependencies(IInstaller? installer)
     {
-        _logger = _installer?.Resolve<ILogger>();
-        _randomizer = _installer?.Resolve<IRandomizer>();
+        _logger = installer?.Resolve<ILogger>();
+        _randomizer = installer?.Resolve<IRandomizer>();
+
+        Console.WriteLine(_logger + ", " + _randomizer + ", "+ installer);
     }
 
-    public void SetInstaller(IInstaller? installer) => _installer = installer;
 }
 
 
@@ -65,7 +65,7 @@ public class UnitTest5 : IUnitTest
 
         RandomValueLogger? randomValueLogger = container?.Build<RandomValueLogger>();
 
-        randomValueLogger.ShowRandomValue();
+        randomValueLogger?.ShowRandomValue();
     }
 }
     

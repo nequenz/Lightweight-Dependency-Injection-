@@ -23,7 +23,7 @@ public struct ContaineredType
 
 public class DefaultInstaller : IInstaller
 {
-    private Dictionary<Type, ContaineredType> _mathes = new();
+    private Dictionary<Type, ContaineredType> _matches = new();
 
     public bool Build()
     {
@@ -36,12 +36,12 @@ public class DefaultInstaller : IInstaller
         Type matchedType = typeof(T);
         ContaineredType type;
 
-        if (_mathes.ContainsKey(matchedInterface))
+        if (_matches.ContainsKey(matchedInterface))
             throw new TypeAccessException("[" + matchedInterface.Name + "] is matched to [" + matchedType.Name + "] yet.");
 
         type = new ContaineredType(typeof(T), typeParam);
 
-        _mathes.Add(typeof(I), type);
+        _matches.Add(typeof(I), type);
 
         return this;
     }
@@ -51,14 +51,15 @@ public class DefaultInstaller : IInstaller
         ContaineredType type;
         object? instance = default;
 
-        bool result = _mathes.TryGetValue( typeof(T), out type);
+        bool result = _matches.TryGetValue( typeof(T), out type);
 
         if (result == false)
             throw new ArgumentNullException(typeof(T) + " has no implementation.");
 
-        if(type.Params == TypeParams.Instance)
+        if (type.Params == TypeParams.Instance)
         {
             instance = Activator.CreateInstance(type.CurrentType);
+            Console.WriteLine("Fuck"+instance);
         }
         else if(type.Params == TypeParams.Singleton)
         {
@@ -68,8 +69,8 @@ public class DefaultInstaller : IInstaller
             }
 
             instance = (T?)type.Instance;
-            _mathes.Remove(typeof(T));
-            _mathes.Add(typeof(T), type);
+            _matches.Remove(typeof(T));
+            _matches.Add(typeof(T), type);
         }
 
         return (T?)instance;

@@ -2,7 +2,5 @@
 
 public interface IInjectable
 {
-    public void SetInstaller(IInstaller? installer);
-
-    public void InitDependencies();
+    public void InitDependencies(IInstaller? installer);
 }
