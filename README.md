@@ -16,8 +16,7 @@
 
         Player player = new Player();
 
-        player.SetInstaller(playerInstaller);
-        player.InitDependencies();
+        player.InitDependencies(playerInstaller);
 
         player.Shoot();
         
