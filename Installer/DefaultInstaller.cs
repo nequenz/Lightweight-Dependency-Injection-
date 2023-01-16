@@ -59,7 +59,6 @@ public class DefaultInstaller : IInstaller
         if (type.Params == TypeParams.Instance)
         {
             instance = Activator.CreateInstance(type.CurrentType);
-            Console.WriteLine("Fuck"+instance);
         }
         else if(type.Params == TypeParams.Singleton)
         {
