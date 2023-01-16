@@ -10,16 +10,17 @@ public interface Boo
 
 public class BooImpl : Boo, IInjectable
 {
-    private ILogger? _logger;
+    private ILogger _logger;
 
     public void InitDependencies(IInstaller? installer)
     {
+        Console.WriteLine("logger has inited");
         _logger = installer?.Resolve<ILogger>();
     }
 
     public void TestCall()
     {
-        _logger?.Log(99);
+        _logger.Log(99);
     }
 }
 
@@ -50,5 +51,9 @@ public class UnitTest6 : IUnitTest
 
         container?.Select<FooImpl>()
             ?.Bind<Boo, BooImpl>(TypeParams.Instance);
+
+        FooImpl foo = container?.Build<FooImpl>();
+
+        foo.TestCall();
     }
 }

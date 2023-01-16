@@ -36,7 +36,6 @@
             result?.InitDependencies(installer);
         }
 
-        Console.WriteLine(result);
         return result;
     }
 

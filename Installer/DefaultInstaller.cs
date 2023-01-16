@@ -1,15 +1,15 @@
 ﻿
-public struct ContaineredType
+public struct ImplementatedType
 {
     private Type _type;
     private TypeParams _params;
     private object? _instance;
 
     public object? Instance => _instance;
-    public Type CurrentType => _type;
+    public Type ImplementationType => _type;
     public TypeParams Params => _params;
 
-    public ContaineredType(Type type, TypeParams typeParams)
+    public ImplementatedType(Type type, TypeParams typeParams)
     {
         _type = type;
         _params = typeParams;
@@ -23,7 +23,7 @@ public struct ContaineredType
 
 public class DefaultInstaller : IInstaller
 {
-    private Dictionary<Type, ContaineredType> _matches = new();
+    private Dictionary<Type, ImplementatedType> _matches = new();
 
     public bool Build()
     {
@@ -34,12 +34,12 @@ public class DefaultInstaller : IInstaller
     {
         Type matchedInterface = typeof(I);
         Type matchedType = typeof(T);
-        ContaineredType type;
+        ImplementatedType type;
 
         if (_matches.ContainsKey(matchedInterface))
             throw new TypeAccessException("[" + matchedInterface.Name + "] is matched to [" + matchedType.Name + "] yet.");
 
-        type = new ContaineredType(typeof(T), typeParam);
+        type = new ImplementatedType(typeof(T), typeParam);
 
         _matches.Add(typeof(I), type);
 
@@ -48,42 +48,46 @@ public class DefaultInstaller : IInstaller
 
     public T? Resolve<T>()
     {
-        ContaineredType containered;
+        ImplementatedType implementated;
         object? instance = default;
 
-        bool result = _matches.TryGetValue( typeof(T), out containered);
+        bool result = _matches.TryGetValue( typeof(T), out implementated);
 
         if (result == false)
             throw new ArgumentNullException(typeof(T) + " has no implementation.");
 
-        if (containered.Params == TypeParams.Instance)
+        if (implementated.Params == TypeParams.Instance)
         {
-            instance = Activator.CreateInstance(containered.CurrentType);
+            instance = Activator.CreateInstance(implementated.ImplementationType);
         }
-        else if(containered.Params == TypeParams.Singleton)
+        else if(implementated.Params == TypeParams.Singleton)
         {
-            if (containered.Instance is null)
-                instance = Activator.CreateInstance(containered.CurrentType);
+            if (implementated.Instance is null)
+                instance = Activator.CreateInstance(implementated.ImplementationType);
 
-            containered.SetInstance(instance);
+            implementated.SetInstance(instance);
             _matches.Remove(typeof(T));
-            _matches.Add(typeof(T), containered);
+            _matches.Add(typeof(T), implementated);
         }
 
         try
         {
-            if (instance is not null && containered.CurrentType is IInjectable)
+            if (instance is not null 
+                && implementated.ImplementationType.GetInterfaces().Contains(typeof(IInjectable)))
+            {
+                Console.WriteLine(implementated.ImplementationType);
                 ((IInjectable)instance)?.InitDependencies(this);
+            }
         }
         catch (ArgumentNullException exc)
         {
             Console.WriteLine(exc.Message + "\n" + exc.StackTrace);
 
-            if (containered.Instance is not null)
+            if (implementated.Instance is not null)
             {
-                containered.SetInstance(null);
+                implementated.SetInstance(null);
                 _matches.Remove(typeof(T));
-                _matches.Add(typeof(T), containered);
+                _matches.Add(typeof(T), implementated);
             }
         }
 

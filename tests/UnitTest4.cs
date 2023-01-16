@@ -18,7 +18,7 @@ public class MainService : ISingleton
 
     public void ShowValue()
     {
-        Console.WriteLine("Value is " + _value);
+        Console.WriteLine("Singleton value is " + _value);
     }
 }
 
@@ -30,12 +30,12 @@ public class UnitTest4 : IUnitTest
     {
         DefaultInstaller installer = new DefaultInstaller();
 
-        ISingleton s = installer.Bind<ISingleton, MainService>(TypeParams.Singleton).Resolve<ISingleton>();
+        ISingleton? s = installer?.Bind<ISingleton, MainService>(TypeParams.Singleton).Resolve<ISingleton>();
 
         s.Value = 45;
         s.ShowValue();
 
-        installer.Resolve<ISingleton>().ShowValue();
+        installer?.Resolve<ISingleton>()?.ShowValue();
 
     }
 }
