@@ -2,7 +2,7 @@
 
 public interface IInstallContainer
 {
-    public void SelectInstaller<T>() where T : IInstaller;
+    public void SelectInstallerType<T>() where T : IInstaller;
 
     public IInstaller? Select<ContractT>() where ContractT : IInjectable;
 

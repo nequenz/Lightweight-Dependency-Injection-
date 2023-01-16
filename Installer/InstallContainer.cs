@@ -8,7 +8,7 @@
         _chosenInstallerType = type;
     }
 
-    public void SelectInstaller<T>() where T : IInstaller => _chosenInstallerType = typeof(T);
+    public void SelectInstallerType<T>() where T : IInstaller => _chosenInstallerType = typeof(T);
 
     public IInstaller? Select<ContractT>() where ContractT : IInjectable
     {
@@ -19,7 +19,7 @@
             throw new TypeAccessException("[" + type.Name + "] has a installer.");
 
         installer = (IInstaller?)Activator.CreateInstance(_chosenInstallerType);
-
+        installer?.SetContainer(this);
         _matches.Add(type, installer);
 
         return installer;
