@@ -14,7 +14,7 @@ public class BooImpl : Boo, IInjectable
 
     public void InitDependencies(IInstaller? installer)
     {
-        Console.WriteLine("logger has inited");
+        Console.WriteLine("logger has inited :" + installer);
         _logger = installer?.Resolve<ILogger>();
     }
 
@@ -48,6 +48,10 @@ public class UnitTest6 : IUnitTest
 
         container?.Select<BooImpl>()
             ?.Bind<ILogger, Logger>(TypeParams.Instance);
+
+        BooImpl booImpl = container?.Build<BooImpl>();
+
+        booImpl.TestCall();
 
         container?.Select<FooImpl>()
             ?.Bind<Boo, BooImpl>(TypeParams.Instance);

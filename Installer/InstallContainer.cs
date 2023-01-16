@@ -1,4 +1,4 @@
-﻿public class InstallContainer
+﻿public class InstallContainer : IInstallContainer
 {
     private Dictionary<Type, IInstaller?> _matches = new();
     private Type _chosenInstallerType;
@@ -39,4 +39,7 @@
         return result;
     }
 
+    public IInstaller? FindInstaller<T>() => _matches.GetValueOrDefault(typeof(T));
+
+    public IInstaller? FindInstaller(Type type) => _matches.GetValueOrDefault(type);
 }

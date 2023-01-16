@@ -23,6 +23,7 @@ public struct ImplementatedType
 
 public class DefaultInstaller : IInstaller
 {
+    private IInstallContainer? _container;
     private Dictionary<Type, ImplementatedType> _matches = new();
 
     public bool Build()
@@ -70,27 +71,40 @@ public class DefaultInstaller : IInstaller
             _matches.Add(typeof(T), implementated);
         }
 
-        try
-        {
-            if (instance is not null 
-                && implementated.ImplementationType.GetInterfaces().Contains(typeof(IInjectable)))
-            {
-                Console.WriteLine(implementated.ImplementationType);
-                ((IInjectable)instance)?.InitDependencies(this);
-            }
-        }
-        catch (ArgumentNullException exc)
-        {
-            Console.WriteLine(exc.Message + "\n" + exc.StackTrace);
 
-            if (implementated.Instance is not null)
+        if(instance is not null 
+            && implementated.ImplementationType.GetInterfaces().Contains(typeof(IInjectable)))
+        {
+            IInstaller? installer;
+
+            if (_container is null)
+                throw new ArgumentException("["+instance + "] has own dependencies but this installer has no assigned container to find them." +
+                    "Please assign container that can solve needed dependencies.");
+
+            installer = _container.FindInstaller(implementated.ImplementationType);
+
+            if (installer is null)
+                throw new ArgumentException("Assigned container has no an installer for [" + implementated.ImplementationType.Name + "]");
+
+            try
             {
-                implementated.SetInstance(null);
-                _matches.Remove(typeof(T));
-                _matches.Add(typeof(T), implementated);
+                ((IInjectable)instance)?.InitDependencies(installer);
+            }
+            catch (ArgumentNullException exc)
+            {
+                Console.WriteLine(exc.Message + "\n" + exc.StackTrace);
+
+                if (implementated.Instance is not null)
+                {
+                    implementated.SetInstance(null);
+                    _matches.Remove(typeof(T));
+                    _matches.Add(typeof(T), implementated);
+                }
             }
         }
 
         return (T?)instance;
     }
+
+    public void SetContainer(IInstallContainer? installContainer) => _container = installContainer;
 }
