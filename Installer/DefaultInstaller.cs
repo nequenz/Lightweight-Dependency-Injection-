@@ -48,28 +48,43 @@ public class DefaultInstaller : IInstaller
 
     public T? Resolve<T>()
     {
-        ContaineredType type;
+        ContaineredType containered;
         object? instance = default;
 
-        bool result = _matches.TryGetValue( typeof(T), out type);
+        bool result = _matches.TryGetValue( typeof(T), out containered);
 
         if (result == false)
             throw new ArgumentNullException(typeof(T) + " has no implementation.");
 
-        if (type.Params == TypeParams.Instance)
+        if (containered.Params == TypeParams.Instance)
         {
-            instance = Activator.CreateInstance(type.CurrentType);
+            instance = Activator.CreateInstance(containered.CurrentType);
         }
-        else if(type.Params == TypeParams.Singleton)
+        else if(containered.Params == TypeParams.Singleton)
         {
-            if (type.Instance == null)
-            {
-                type.SetInstance(Activator.CreateInstance(type.CurrentType));
-            }
+            if (containered.Instance is null)
+                instance = Activator.CreateInstance(containered.CurrentType);
 
-            instance = (T?)type.Instance;
+            containered.SetInstance(instance);
             _matches.Remove(typeof(T));
-            _matches.Add(typeof(T), type);
+            _matches.Add(typeof(T), containered);
+        }
+
+        try
+        {
+            if (instance is not null && containered.CurrentType is IInjectable)
+                ((IInjectable)instance)?.InitDependencies(this);
+        }
+        catch (ArgumentNullException exc)
+        {
+            Console.WriteLine(exc.Message + "\n" + exc.StackTrace);
+
+            if (containered.Instance is not null)
+            {
+                containered.SetInstance(null);
+                _matches.Remove(typeof(T));
+                _matches.Add(typeof(T), containered);
+            }
         }
 
         return (T?)instance;

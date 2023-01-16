@@ -57,10 +57,10 @@ public class UnitTest5 : IUnitTest
 {
     public void Run()
     {
-        InstallContainer container = new(typeof(DefaultInstaller));
+        InstallContainer? container = new(typeof(DefaultInstaller));
 
-        container.Select<RandomValueLogger>()
-            .Bind<ILogger, Logger>(TypeParams.Instance)
+        container?.Select<RandomValueLogger>()
+            ?.Bind<ILogger, Logger>(TypeParams.Instance)
             .Bind<IRandomizer, Randimizer2>(TypeParams.Instance);
 
         RandomValueLogger? randomValueLogger = container?.Build<RandomValueLogger>();
